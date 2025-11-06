@@ -127,11 +127,15 @@ else:
         return None
 
     soup = BeautifulSoup(html, "html.parser")
+    # Detectar si se cargó una norma distinta
     titulo_div = soup.find("div", id="tituloDetalleAviso")
-    cuerpo_div = soup.find("div", id="cuerpoDetalleAviso")
+    titulo_id = titulo_div.find("h2").get_text(strip=True) if titulo_div and titulo_div.find("h2") else ""
 
-    if not titulo_div or not cuerpo_div:
+    # Si el ID en pantalla no coincide con el solicitado, abortar
+    if str(id_norma) not in titulo_id:
+        print(f"⚠️ ID {id_norma}: redirigido a otra norma ({titulo_id}). Ignorado.")
         return None
+
 
     org = titulo_div.find("h1").get_text(strip=True) if titulo_div.find("h1") else ""
     norma = titulo_div.find("h2").get_text(strip=True) if titulo_div.find("h2") else ""
@@ -218,6 +222,7 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
 
 
 
