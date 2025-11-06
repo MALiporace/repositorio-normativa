@@ -1,4 +1,6 @@
-# === LIBRERÕAS ===
+# -*- coding: utf-8 -*-
+
+# === LIBRER√çAS ===
 !apt-get -qq update
 !apt-get -qq install -y firefox
 !wget -q https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz
@@ -21,7 +23,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from google.generativeai import configure, GenerativeModel
 
-# === CONFIGURACI”N ===
+# === CONFIGURACI√ìN ===
 APP_KEY = "970d14j795cxk6k"
 APP_SECRET = "zg8m413txk1j2kb"
 REFRESH_TOKEN = "rG0VktaKz3QAAAAAAAAAASzhG6FzW0RU5fV5hmH_rQ7euKwv3U8VghhdkqZrCVQj"
@@ -49,7 +51,7 @@ def leer_ultimo_id(tipo):
         _, res = dbx.files_download(ruta)
         return int(res.content.decode().strip())
     except Exception:
-        # Si no existe el archivo, se asigna un valor base seg˙n el tipo
+        # Si no existe el archivo, se asigna un valor base seg√∫n el tipo
         return 333000 if tipo == "matutina" else 5900000
 
 def guardar_ultimo_id(tipo, nuevo_id):
@@ -57,22 +59,22 @@ def guardar_ultimo_id(tipo, nuevo_id):
     ruta = RUTA_ID_MATUTINA if tipo == "matutina" else RUTA_ID_VESPERTINA
     dbx.files_upload(f"{nuevo_id}".encode(), ruta, mode=dropbox.files.WriteMode("overwrite"))
 
-# === FUNCI”N GEMINI ===
+# === FUNCI√ìN GEMINI ===
 def resumir_con_gemini(texto):
     if not texto or len(texto) < 50:
         return texto.strip()
     prompt = f"""
-Sos un analista jurÌdico especializado en normas del BoletÌn Oficial Argentino.
-LeÈ el siguiente texto normativo y redact· un resumen interpretativo en espaÒol,
-claro, sintÈtico y con lenguaje tÈcnico-administrativo (no literario).
+Sos un analista jur√≠dico especializado en normas del Bolet√≠n Oficial Argentino.
+Le√© el siguiente texto normativo y redact√° un resumen interpretativo en espa√±ol,
+claro, sint√©tico y con lenguaje t√©cnico-administrativo (no literario).
 
 El resumen debe indicar brevemente:
-- QuÈ tipo de disposiciÛn es (resoluciÛn, decreto, comunicaciÛn, etc.)
-- QuÈ tema o materia regula.
-- Cu·l es el objeto o efecto principal.
-- Si se menciona alg˙n organismo o dependencia relevante.
+- Qu√© tipo de disposici√≥n es (resoluci√≥n, decreto, comunicaci√≥n, etc.)
+- Qu√© tema o materia regula.
+- Cu√°l es el objeto o efecto principal.
+- Si se menciona alg√∫n organismo o dependencia relevante.
 
-Limite m·ximo: 100 palabras.
+Limite m√°ximo: 100 palabras.
 
 Texto original:
 {texto.strip()}
@@ -133,7 +135,7 @@ def scrape_norma(driver, id_norma, fecha_base_yyyymmdd):
 
     return {
         "Organismo": org,
-        "N∞ de Norma": norma,
+        "N¬∞ de Norma": norma,
         "Extracto": extracto,
         "Fecha": fecha_base_yyyymmdd,
         "ID": id_norma,
@@ -149,7 +151,7 @@ def scrape_dia_completo(headless=False):
     fecha_base = datetime.now(timezone(timedelta(hours=-3))).strftime("%Y%m%d")
     id_inicial = leer_ultimo_id(tipo) + 1
 
-    print(f"?? Ejecutando ediciÛn {tipo.upper()} ({fecha_base}), desde ID {id_inicial}")
+    print(f"?? Ejecutando edici√≥n {tipo.upper()} ({fecha_base}), desde ID {id_inicial}")
     driver = init_driver(headless=headless)
 
     data = []
@@ -165,7 +167,7 @@ def scrape_dia_completo(headless=False):
             print(f"? {id_actual}")
         else:
             sin_resultados += 1
-            print(f"?? {id_actual} vacÌo ({sin_resultados}/30)")
+            print(f"?? {id_actual} vac√≠o ({sin_resultados}/30)")
         id_actual += 1
         time.sleep(random.uniform(0.8, 1.8))
 
@@ -208,4 +210,5 @@ def scrape_dia_completo(headless=False):
     print(f"? {len(data)} normas nuevas ({tipo}). CSV maestro actualizado en Dropbox.")
 
 # === EJECUTAR ===
+
 scrape_dia_completo(headless=True)
