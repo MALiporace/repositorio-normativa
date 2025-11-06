@@ -3,7 +3,7 @@ FROM python:3.10-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
-    wget curl gnupg unzip firefox-esr \
+    wget curl gnupg unzip firefox-esr xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 RUN GECKODRIVER_VERSION=0.36.0 && \
@@ -13,9 +13,9 @@ RUN GECKODRIVER_VERSION=0.36.0 && \
     chmod +x /usr/local/bin/geckodriver
 
 WORKDIR /app
-
 COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "boletin_scraper.py"]
+# Lanzar Firefox dentro de una pantalla virtual (headless real)
+CMD xvfb-run -a python boletin_scraper.py
