@@ -18,8 +18,9 @@ jobs:
         run: |
           # Instalar Firefox desde Mozilla
           mkdir -p $HOME/firefox
-          wget -O firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=es-AR"
-          tar xjf firefox.tar.bz2 -C $HOME/firefox --strip-components=1
+          wget -O firefox.tar.xz "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=es-AR"
+          tar -xf firefox.tar.xz -C $HOME/firefox --strip-components=1
+
           echo "$HOME/firefox" >> $GITHUB_PATH
 
           # Instalar geckodriver
