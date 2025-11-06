@@ -1,0 +1,49 @@
+name: Ejecutar boletin_scraper.py 2 veces por día
+
+on:
+  schedule:
+    - cron: "30 12 * * *"   # 09:30 hora Argentina
+    - cron: "0 18 * * *"    # 15:00 hora Argentina
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar Firefox y geckodriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y firefox-esr wget unzip
+          GECKODRIVER_VERSION=0.36.0
+          wget -q "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz"
+          tar -xzf geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz
+          sudo mv geckodriver /usr/local/bin
+          chmod +x /usr/local/bin/geckodriver
+
+      - name: Configurar Python y dependencias
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Instalar librerías Python
+        run: |
+          pip install --no-cache-dir -r requirements.txt
+
+      - name: Crear archivo de variables
+        run: |
+          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+          echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+          echo "REFRESH_TOKEN=${{ secrets.REFRESH_TOKEN }}" >> .env
+          echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
+
+      - name: Ejecutar el script
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        run: python boletin_scraper.py
