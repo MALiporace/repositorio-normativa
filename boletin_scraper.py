@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 # === LIBRERÍAS ===
-!apt-get -qq update
-!apt-get -qq install -y firefox
-!wget -q https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz
-!tar -xzf geckodriver-v0.36.0-linux64.tar.gz
-!mv geckodriver /usr/local/bin/
-!chmod +x /usr/local/bin/geckodriver
-!pip install -q selenium bs4 google-generativeai dropbox
+#!apt-get -qq update
+#!apt-get -qq install -y firefox
+#!wget -q https://github.com/mozilla/geckodriver/releases/download/v0.36.0/geckodriver-v0.36.0-linux64.tar.gz
+#!tar -xzf geckodriver-v0.36.0-linux64.tar.gz
+#!mv geckodriver /usr/local/bin/
+#!chmod +x /usr/local/bin/geckodriver
+#!pip install -q selenium bs4 google-generativeai dropbox
 
 # === IMPORTS ===
 import io
@@ -212,3 +212,4 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
