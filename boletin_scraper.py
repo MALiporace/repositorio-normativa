@@ -16,6 +16,7 @@ import time
 import re
 import dropbox
 import pandas as pd
+import os
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 from selenium import webdriver
@@ -24,16 +25,16 @@ from selenium.webdriver.common.by import By
 from google.generativeai import configure, GenerativeModel
 
 # === CONFIGURACIÓN ===
-APP_KEY = "970d14j795cxk6k"
-APP_SECRET = "zg8m413txk1j2kb"
-REFRESH_TOKEN = "rG0VktaKz3QAAAAAAAAAASzhG6FzW0RU5fV5hmH_rQ7euKwv3U8VghhdkqZrCVQj"
+APP_KEY = os.environ["APP_KEY"]
+APP_SECRET = os.environ["APP_SECRET"]
+REFRESH_TOKEN = os.environ["REFRESH_TOKEN"]
 
 RUTA_ID_MATUTINA = "/Proyecto Repositorio Normativo/ultimo_id_norma_matutina.txt"
 RUTA_ID_VESPERTINA = "/Proyecto Repositorio Normativo/ultimo_id_norma_vespertina.txt"
 RUTA_MAESTRO = "/Proyecto Repositorio Normativo/normas_boletin_maestro.csv"
 RUTA_HISTORICOS = "/Proyecto Repositorio Normativo/Historicos/"
 
-configure(api_key="AIzaSyCyJmfUx74dm58Z5EjirAaHFbYEnygciuE")
+configure(api_key=os.environ["GOOGLE_API_KEY"])
 modelo_gemini = GenerativeModel("gemini-2.5-flash")
 
 # === FUNCIONES DROPBOX ===
@@ -212,4 +213,5 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
 
