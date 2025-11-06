@@ -53,7 +53,7 @@ def leer_ultimo_id(tipo):
         return int(res.content.decode().strip())
     except Exception:
         # Si no existe el archivo, se asigna un valor base según el tipo
-        return 333000 if tipo == "matutina" else 5900000
+        return 333000 if tipo == "matutina" else 5957264
 
 def guardar_ultimo_id(tipo, nuevo_id):
     dbx = get_dropbox_client()
@@ -112,8 +112,13 @@ def init_driver(headless=False):
     return driver
 
 # === SCRAPEO DE NORMA ===
-def scrape_norma(driver, id_norma, fecha_base_yyyymmdd):
+def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
+    
+    if tipo == "vespertina":
+    url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}?suplemento=1"
+else:
     url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}"
+
     driver.get(url)
     time.sleep(random.uniform(2, 4))
 
@@ -161,7 +166,7 @@ def scrape_dia_completo(headless=False):
     limite = 400 if tipo == "matutina" else 800
 
     while sin_resultados < 30 and id_actual - id_inicial < limite:
-        resultado = scrape_norma(driver, id_actual, fecha_base)
+        resultado = scrape_norma(driver, id_actual, fecha_base, tipo)
         if resultado:
             data.append(resultado)
             sin_resultados = 0
@@ -213,5 +218,6 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
 
 
