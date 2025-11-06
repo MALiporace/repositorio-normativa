@@ -14,15 +14,21 @@ jobs:
       - name: Clonar el repositorio
         uses: actions/checkout@v3
 
-      - name: Instalar Firefox y geckodriver
+      - name: Instalar Firefox y geckodriver manualmente
         run: |
-          sudo apt-get update
-          sudo apt-get install -y firefox-esr wget unzip
+          # Instalar Firefox desde Mozilla
+          mkdir -p $HOME/firefox
+          wget -O firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=es-AR"
+          tar xjf firefox.tar.bz2 -C $HOME/firefox --strip-components=1
+          echo "$HOME/firefox" >> $GITHUB_PATH
+
+          # Instalar geckodriver
           GECKODRIVER_VERSION=0.36.0
           wget -q "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz"
           tar -xzf geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz
+          chmod +x geckodriver
           sudo mv geckodriver /usr/local/bin
-          chmod +x /usr/local/bin/geckodriver
+
 
       - name: Configurar Python y dependencias
         uses: actions/setup-python@v4
