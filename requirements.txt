@@ -2,4 +2,5 @@ selenium==4.16.0
 beautifulsoup4
 dropbox
 pandas
+requests
 google-generativeai
