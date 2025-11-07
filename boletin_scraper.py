@@ -17,6 +17,7 @@ import re
 import dropbox
 import pandas as pd
 import os
+import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 from selenium import webdriver
@@ -118,10 +119,26 @@ def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
     else:
         url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}"
 
-    driver.get(url)
-    time.sleep(random.uniform(2, 4))
+    # ✅ Defensa A - Validar conexión antes con HEAD
+    try:
+        r = requests.head(url, timeout=5)
+        if r.status_code >= 400:
+            print(f"⚠️ HEAD request fallida para {url} (status: {r.status_code})")
+            return None
+    except Exception as e:
+        print(f"❌ Error de conexión HEAD: {e}")
+        return None
 
+    # ✅ Defensa B - Intentar cargar con Selenium
+    try:
+        driver.get(url)
+    except Exception as e:
+        print(f"❌ Error cargando {url}: {e}")
+        return None
+
+    time.sleep(random.uniform(2, 4))
     html = driver.page_source
+
     if "cuerpoDetalleAviso" not in html:
         print(f"⚠️ ID {id_norma}: no se encontró cuerpoDetalleAviso. Página vacía o bloqueada.")
         return None
@@ -136,7 +153,6 @@ def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
 
     # Confirmar que el ID en pantalla coincide con el esperado en vespertina
     titulo_id = titulo_div.find("h2").get_text(strip=True) if titulo_div.find("h2") else ""
-    
     if tipo == "vespertina" and str(id_norma) not in titulo_id:
         print(f"⚠️ ID {id_norma}: redirigido a otra norma ({titulo_id}). Ignorado.")
         return None
@@ -144,7 +160,6 @@ def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
     org = titulo_div.find("h1").get_text(strip=True) if titulo_div.find("h1") else ""
     norma = titulo_id
     extracto = titulo_div.find("h6").get_text(strip=True) if titulo_div.find("h6") else ""
-    cuerpo_div = soup.find("div", id="cuerpoDetalleAviso")
     texto = cuerpo_div.get_text(separator=" ", strip=True)
     resumen = resumir_con_gemini(texto)
 
@@ -157,6 +172,7 @@ def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
         "URL": url,
         "Texto": resumen
     }
+
 
 
 # === SCRAPEO COMPLETO ===
@@ -228,6 +244,7 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
 
 
 
