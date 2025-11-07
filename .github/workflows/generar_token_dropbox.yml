@@ -1,0 +1,31 @@
+name: Generar refresh_token de Dropbox
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generar-token:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Instalar Python y requests
+        run: pip install requests
+
+      - name: Solicitar refresh_token de Dropbox
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+        run: |
+          echo "Visitá este link para autorizar la app:"
+          echo
+          echo "https://www.dropbox.com/oauth2/authorize?client_id=${APP_KEY}&response_type=code&token_access_type=offline"
+          echo
+          echo "Una vez autorizado, copiá el 'authorization code' que devuelve Dropbox y usalo abajo para hacer la petición manualmente con curl o Postman."
+
+          echo "Ejemplo para obtener el refresh_token:"
+          echo
+          echo 'curl -X POST https://api.dropboxapi.com/oauth2/token \'
+          echo '  -u "${APP_KEY}:${APP_SECRET}" \'
+          echo '  -d code=AUTORIZATION_CODE_ACÁ \'
+          echo '  -d grant_type=authorization_code \'
+          echo
