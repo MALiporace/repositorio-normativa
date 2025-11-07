@@ -18,20 +18,16 @@ jobs:
 
       - name: Instalar Firefox y geckodriver manualmente
         run: |
-          # Instalar Firefox desde Mozilla
           mkdir -p $HOME/firefox
           wget -O firefox.tar.xz "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=es-AR"
           tar -xf firefox.tar.xz -C $HOME/firefox --strip-components=1
-
           echo "$HOME/firefox" >> $GITHUB_PATH
 
-          # Instalar geckodriver
           GECKODRIVER_VERSION=0.36.0
           wget -q "https://github.com/mozilla/geckodriver/releases/download/v${GECKODRIVER_VERSION}/geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz"
           tar -xzf geckodriver-v${GECKODRIVER_VERSION}-linux64.tar.gz
           chmod +x geckodriver
           sudo mv geckodriver /usr/local/bin
-
 
       - name: Configurar Python y dependencias
         uses: actions/setup-python@v4
@@ -57,3 +53,25 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: python boletin_scraper.py
 
+      - name: Enviar notificación por correo
+        if: always()
+        run: |
+          STATUS="✅ Ejecución exitosa"
+          if [ "${{ job.status }}" != "success" ]; then
+            STATUS="❌ Ejecución con errores"
+          fi
+
+          echo "[$(date +"%Y-%m-%d %H:%M")] $STATUS" >> ejecuciones.log
+
+          echo -e "Asunto: Estado del scraping Boletín\n\n$STATUS\nGitHub Actions: https://github.com/${{ github.repository }}/actions" | \
+          curl --url 'smtps://smtp.gmail.com:465' --ssl-reqd \
+            --mail-from "${{ secrets.SMTP_USER }}" \
+            --mail-rcpt "${{ secrets.EMAIL_TO }}" \
+            --user "${{ secrets.SMTP_USER }}:${{ secrets.SMTP_PASS }}" \
+            -T -
+
+      - name: Subir log a Dropbox
+        if: always()
+        run: |
+          pip install dropbox
+          python subir_log_dropbox.py
