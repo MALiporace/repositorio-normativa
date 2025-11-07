@@ -72,6 +72,10 @@ jobs:
 
       - name: Subir log a Dropbox
         if: always()
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
         run: |
           pip install dropbox
           python subir_log_dropbox.py
