@@ -113,36 +113,38 @@ def init_driver(headless=False):
 
 # === SCRAPEO DE NORMA ===
 def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
-    
-if tipo == "vespertina":
-    url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}?suplemento=1"
-else:
-    url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}"
-
-
+    if tipo == "vespertina":
+        url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}?suplemento=1"
+    else:
+        url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}"
 
     driver.get(url)
     time.sleep(random.uniform(2, 4))
 
     html = driver.page_source
     if "cuerpoDetalleAviso" not in html:
+        print(f"⚠️ ID {id_norma}: no se encontró cuerpoDetalleAviso. Página vacía o bloqueada.")
         return None
 
     soup = BeautifulSoup(html, "html.parser")
-    # Detectar si se cargó una norma distinta
     titulo_div = soup.find("div", id="tituloDetalleAviso")
-    titulo_id = titulo_div.find("h2").get_text(strip=True) if titulo_div and titulo_div.find("h2") else ""
+    cuerpo_div = soup.find("div", id="cuerpoDetalleAviso")
 
-    # Si el ID en pantalla no coincide con el solicitado, abortar
+    if not titulo_div or not cuerpo_div:
+        print(f"⚠️ ID {id_norma}: estructura incompleta.")
+        return None
+
+    # Confirmar que el ID en pantalla coincide con el esperado
+    titulo_id = titulo_div.find("h2").get_text(strip=True) if titulo_div.find("h2") else ""
     if str(id_norma) not in titulo_id:
         print(f"⚠️ ID {id_norma}: redirigido a otra norma ({titulo_id}). Ignorado.")
         return None
 
-
     org = titulo_div.find("h1").get_text(strip=True) if titulo_div.find("h1") else ""
-    norma = titulo_div.find("h2").get_text(strip=True) if titulo_div.find("h2") else ""
+    norma = titulo_id
     extracto = titulo_div.find("h6").get_text(strip=True) if titulo_div.find("h6") else ""
     texto = cuerpo_div.get_text(separator=" ", strip=True)
+
     resumen = resumir_con_gemini(texto)
 
     return {
@@ -154,6 +156,7 @@ else:
         "URL": url,
         "Texto": resumen
     }
+
 
 # === SCRAPEO COMPLETO ===
 def scrape_dia_completo(headless=False):
@@ -224,6 +227,7 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
 
 
 
