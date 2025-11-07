@@ -134,17 +134,18 @@ def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
         print(f"⚠️ ID {id_norma}: estructura incompleta.")
         return None
 
-    # Confirmar que el ID en pantalla coincide con el esperado
+    # Confirmar que el ID en pantalla coincide con el esperado en vespertina
     titulo_id = titulo_div.find("h2").get_text(strip=True) if titulo_div.find("h2") else ""
-    if str(id_norma) not in titulo_id:
+    
+    if tipo == "vespertina" and str(id_norma) not in titulo_id:
         print(f"⚠️ ID {id_norma}: redirigido a otra norma ({titulo_id}). Ignorado.")
         return None
 
     org = titulo_div.find("h1").get_text(strip=True) if titulo_div.find("h1") else ""
     norma = titulo_id
     extracto = titulo_div.find("h6").get_text(strip=True) if titulo_div.find("h6") else ""
+    cuerpo_div = soup.find("div", id="cuerpoDetalleAviso")
     texto = cuerpo_div.get_text(separator=" ", strip=True)
-
     resumen = resumir_con_gemini(texto)
 
     return {
@@ -227,6 +228,7 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
 
 
 
