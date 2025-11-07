@@ -114,10 +114,11 @@ def init_driver(headless=False):
 # === SCRAPEO DE NORMA ===
 def scrape_norma(driver, id_norma, fecha_base_yyyymmdd, tipo="matutina"):
     
- if tipo == "vespertina":
+if tipo == "vespertina":
     url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}?suplemento=1"
 else:
     url = f"https://www.boletinoficial.gov.ar/detalleAviso/primera/{id_norma}/{fecha_base_yyyymmdd}"
+
 
 
     driver.get(url)
@@ -223,6 +224,7 @@ def scrape_dia_completo(headless=False):
 # === EJECUTAR ===
 
 scrape_dia_completo(headless=True)
+
 
 
 
