@@ -4,8 +4,8 @@ name: Ejecutar boletin_scraper.py 2 veces por día
 
 on:
   schedule:
-    - cron: "30 12 * * *"   # 09:30 hora Argentina
-    - cron: "0 18 * * *"    # 15:00 hora Argentina
+    - cron: "0 10 * * *"   # 07:00 hora Argentina
+    - cron: "0 17 * * *"    # 14:00 hora Argentina
   workflow_dispatch:
 
 jobs:
