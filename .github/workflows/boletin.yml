@@ -56,14 +56,28 @@ jobs:
       - name: Enviar notificación por correo
         if: always()
         run: |
+          # Detectar estado
           STATUS="✅ Ejecución exitosa"
           if [ "${{ job.status }}" != "success" ]; then
             STATUS="❌ Ejecución con errores"
           fi
-
-          echo "[$(date +"%Y-%m-%d %H:%M")] $STATUS" >> ejecuciones.log
-
-          echo -e "Asunto: Estado del scraping Boletín\n\n$STATUS\nGitHub Actions: https://github.com/${{ github.repository }}/actions" | \
+      
+          # Hora local Buenos Aires (UTC-3)
+          FECHA=$(date -u -d "-3 hours" +"%Y-%m-%d %H:%M:%S")
+      
+          # Registrar en log acumulativo
+          echo "[$FECHA] $STATUS" >> ejecuciones.log
+      
+          # Crear mensaje con encabezados SMTP completos
+          {
+            echo "From: Repositorio Normativo <${{ secrets.SMTP_USER }}>"
+            echo "To: ${{ secrets.EMAIL_TO }}"
+            echo "Subject: [Repositorio Normativo] $STATUS - $FECHA"
+            echo
+            echo "$STATUS"
+            echo "Hora local (Buenos Aires): $FECHA"
+            echo "GitHub Actions: https://github.com/${{ github.repository }}/actions"
+          } | \
           curl --url 'smtps://smtp.gmail.com:465' --ssl-reqd \
             --mail-from "${{ secrets.SMTP_USER }}" \
             --mail-rcpt "${{ secrets.EMAIL_TO }}" \
