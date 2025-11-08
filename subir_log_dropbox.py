@@ -8,19 +8,19 @@ dbx = dropbox.Dropbox(
     oauth2_refresh_token=os.environ.get("REFRESH_TOKEN")
 )
 
-# Ruta local del log
+# 🗂 Ruta local del log
 log_path = "ejecuciones.log"
 
-# Verificar existencia del archivo y crear uno vacío si no existe
+# 📝 Verificar existencia del archivo y crear uno vacío si no existe
 if not os.path.exists(log_path):
     with open(log_path, "w") as f:
         f.write("⚠️ Log vacío: no se registraron eventos.\n")
 
-# Subir a Dropbox
+# ☁️ Subir a Dropbox (a la carpeta asignada por la app, por ejemplo /Boletin_BO/logs/)
 with open(log_path, "rb") as f:
     dbx.files_upload(
         f.read(),
-        "/Proyecto Repositorio Normativo/logs/ejecuciones.log",
+        "/logs/ejecuciones.log",  # esta es la ruta relativa dentro de App Folder
         mode=dropbox.files.WriteMode("overwrite")
     )
 
