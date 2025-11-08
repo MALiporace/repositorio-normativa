@@ -45,12 +45,12 @@ jobs:
           echo "REFRESH_TOKEN=${{ secrets.REFRESH_TOKEN }}" >> .env
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
 
-      # 🔽 NUEVO PASO: Descargar log existente desde Dropbox
+      # 🔽 Descargar log existente desde Dropbox
       - name: Descargar log existente de Dropbox
         run: |
           echo "🔽 Descargando log previo desde Dropbox..."
           curl -X POST https://content.dropboxapi.com/2/files/download \
-            --header "Authorization: Bearer ${{ secrets.DROPBOX_TOKEN }}" \
+            --header "Authorization: Bearer ${{ secrets.REFRESH_TOKEN }}" \
             --header "Dropbox-API-Arg: {\"path\": \"/logs/ejecuciones.log\"}" \
             -o ejecuciones.log || echo "Sin log previo encontrado."
 
