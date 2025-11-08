@@ -1,5 +1,6 @@
 import os
 import dropbox
+from datetime import datetime, timedelta, timezone
 
 # Inicializar cliente de Dropbox
 dbx = dropbox.Dropbox(
@@ -11,17 +12,28 @@ dbx = dropbox.Dropbox(
 # 🗂 Ruta local del log
 log_path = "ejecuciones.log"
 
-# 📝 Verificar existencia del archivo y crear uno vacío si no existe
-if not os.path.exists(log_path):
-    with open(log_path, "w") as f:
-        f.write("⚠️ Log vacío: no se registraron eventos.\n")
+# 🕒 Ajuste horario a Buenos Aires (UTC-3)
+argentina_tz = timezone(timedelta(hours=-3))
+timestamp = datetime.now(argentina_tz).strftime("%Y-%m-%d %H:%M:%S")
 
-# ☁️ Subir a Dropbox (a la carpeta asignada por la app, por ejemplo /Boletin_BO/logs/)
+# 🧩 Supongamos que tenés el último ID en una variable llamada `ultimo_id`
+# Si el valor lo obtenés dinámicamente en otra parte del script, solo asegurate de tenerlo disponible acá.
+try:
+    linea_log = f"[{timestamp}] Ejecución completada. Último ID procesado: {ultimo_id}\n"
+except NameError:
+    linea_log = f"[{timestamp}] Ejecución completada. Último ID procesado: (no definido)\n"
+
+# 📝 Escribir o agregar al log existente
+with open(log_path, "a", encoding="utf-8") as f:
+    f.write(linea_log)
+
+# ☁️ Subir versión consolidada al Dropbox
 with open(log_path, "rb") as f:
     dbx.files_upload(
         f.read(),
-        "/logs/ejecuciones.log",  # esta es la ruta relativa dentro de App Folder
+        "/logs/ejecuciones.log",  # ruta relativa dentro del App Folder
         mode=dropbox.files.WriteMode("overwrite")
     )
 
-print("✅ Log subido exitosamente a Dropbox.")
+print("✅ Log actualizado y subido exitosamente a Dropbox.")
+
