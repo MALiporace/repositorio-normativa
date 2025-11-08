@@ -18,10 +18,19 @@ timestamp = datetime.now(argentina_tz).strftime("%Y-%m-%d %H:%M:%S")
 
 # 🧩 Supongamos que tenés el último ID en una variable llamada `ultimo_id`
 # Si el valor lo obtenés dinámicamente en otra parte del script, solo asegurate de tenerlo disponible acá.
-try:
+# 🕒 Registrar fecha y hora de la ejecución
+timestamp = datetime.now(argentina_tz).strftime("%Y-%m-%d %H:%M:%S")
+
+# 🧩 Determinar qué mensaje dejar en el log
+if 'ultimo_id' in locals() and ultimo_id is not None:
     linea_log = f"[{timestamp}] Ejecución completada. Último ID procesado: {ultimo_id}\n"
-except NameError:
-    linea_log = f"[{timestamp}] Ejecución completada. Último ID procesado: (no definido)\n"
+else:
+    linea_log = f"[{timestamp}] Ejecución completada. Sin publicaciones detectadas.\n"
+
+# 📝 Escribir o agregar al log existente
+with open(log_path, "a", encoding="utf-8") as f:
+    f.write(linea_log)
+
 
 # 📝 Escribir o agregar al log existente
 with open(log_path, "a", encoding="utf-8") as f:
