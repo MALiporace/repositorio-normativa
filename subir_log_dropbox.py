@@ -32,10 +32,6 @@ with open(log_path, "a", encoding="utf-8") as f:
     f.write(linea_log)
 
 
-# 📝 Escribir o agregar al log existente
-with open(log_path, "a", encoding="utf-8") as f:
-    f.write(linea_log)
-
 # ☁️ Subir versión consolidada al Dropbox
 with open(log_path, "rb") as f:
     dbx.files_upload(
