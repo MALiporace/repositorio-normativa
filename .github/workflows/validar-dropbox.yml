@@ -1,0 +1,22 @@
+name: Validar credenciales de Dropbox
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-dropbox:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar dropbox SDK
+        run: pip install dropbox
+
+      - name: Ejecutar validación de Dropbox
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
+        run: python validar_dropbox.py
