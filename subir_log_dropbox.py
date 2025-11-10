@@ -16,19 +16,17 @@ log_path = "ejecuciones.log"
 argentina_tz = timezone(timedelta(hours=-3))
 timestamp = datetime.now(argentina_tz).strftime("%Y-%m-%d %H:%M:%S")
 
-# 🧩 Supongamos que tenés el último ID en una variable llamada `ultimo_id`
-# Si el valor lo obtenés dinámicamente en otra parte del script, solo asegurate de tenerlo disponible acá.
 # 🕒 Registrar fecha y hora de la ejecución
 timestamp = datetime.now(argentina_tz).strftime("%Y-%m-%d %H:%M:%S")
 
 #Leer el último ID del CSV maestro
 ultimo_id = None
-maestro_path = "data/repositorio_maestro.csv"  # ajustá si tu ruta es distinta
+maestro_path = "Proyecto Repositorio Normativo/normas_boletin_maestro.csv"
 if os.path.exists(maestro_path):
     try:
         df = pd.read_csv(maestro_path)
-        if not df.empty and "id_norma" in df.columns:
-            ultimo_id = df["id_norma"].iloc[-1]
+        if not df.empty and "ID" in df.columns:
+            ultimo_id = df["ID"].iloc[-1]
     except Exception as e:
         print(f"⚠️ Error al leer el maestro: {e}")
 
